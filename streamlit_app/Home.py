@@ -184,8 +184,18 @@ if "last_analysis" in st.session_state:
         with st.spinner("Reasoning..."):
             response = answer_query(followup)
 
-        text = response.get("answer", response.get("explanation", ""))
-        st.session_state.chat_history.append(
+        text = response.get("answer", "")
+
+        intent = response.get("detected_intent")
+        conf = response.get("intent_confidence")
+
+        if intent:
+            st.caption(
+                f"🧭 Detected intent: **{intent}** "
+                f"(confidence {conf})"
+            )
+
+            st.session_state.chat_history.append(
             {"role": "assistant", "content": text}
         )
 

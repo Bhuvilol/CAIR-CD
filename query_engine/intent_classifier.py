@@ -63,6 +63,8 @@ def predict_intent(query: str, threshold=0.45):
             best_intent = intent
 
     if best_score < threshold:
-        return None
+        return None,best_score
 
-    return best_intent
+    return best_intent, best_score
+
+
