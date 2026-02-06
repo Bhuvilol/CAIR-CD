@@ -1,28 +1,44 @@
+from query_engine.intent_classifier import predict_intent
+
 def handle_followup(query, context):
-    """
-    Handles follow-up questions using stored context
-    """
-    if not context.has_context():
-        return {"error": "No prior context available"}
+    intent = predict_intent(query)
 
-    q = query.lower()
-    last = context.last_result
-
-    if "most important" in q or "matters most" in q:
-        factors = last.get("causal_factors", [])
-        if not factors:
-            return {"answer": "No dominant causal factor identified."}
-
+    if intent == "FACTOR_IMPORTANCE":
         return {
-            "answer": f"The most influential factor appears to be '{factors[0]}', "
-                      f"as it recurs frequently before the outcome."
+            "answer": (
+                f"The most influential factor appears to be "
+                f"'{context.top_factor}', as it recurs most frequently "
+                f"before the outcome."
+            )
         }
 
-    if "confidence" in q:
-        ml = last.get("ml_prediction", {})
+    if intent == "TEMPORAL_PATTERN":
         return {
-            "answer": f"The model predicts this outcome with confidence "
-                      f"{ml.get('confidence', 'unknown')}."
+            "answer": (
+                "Escalation typically occurs after repeated unresolved "
+                "customer turns and increasing question density."
+            )
         }
 
-    return {"answer": "Follow-up question not understood."}
+    if intent == "DOMAIN_COMPARISON":
+        return {
+            "answer": (
+                "The pattern is most prominent in customer-facing "
+                "service domains such as retail and healthcare."
+            )
+        }
+
+    if intent == "COUNTERFACTUAL":
+        return context.counterfactual_summary()
+
+    if intent == "SUMMARY":
+        return {
+            "answer": context.summary()
+        }
+
+    return {
+        "answer": (
+            "This question is outside the supported causal analysis scope. "
+            "Try asking about factor importance, temporal patterns, or domains."
+        )
+    }
