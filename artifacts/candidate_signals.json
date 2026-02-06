@@ -1,0 +1,11 @@
+{
+  "long_conversation": {
+    "Escalation": 587
+  },
+  "high_question_ratio": {
+    "Escalation": 38
+  },
+  "customer_last_turn": {
+    "Escalation": 28
+  }
+}
