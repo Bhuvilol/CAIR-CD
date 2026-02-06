@@ -1,7 +1,16 @@
 streamlit>=1.30.0
-sentence-transformers
-torch
+
+# Core
 numpy
 pandas
 scikit-learn
-tensorflow
+
+# ML / DL
+tensorflow==2.15.0
+torch==2.1.0
+
+# NLP
+sentence-transformers==2.2.2
+
+# Utils
+tqdm
