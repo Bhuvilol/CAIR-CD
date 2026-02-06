@@ -1,0 +1,46 @@
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    EDA SUMMARY REPORT                                         ║
+║                    Generated: 2026-02-06 13:35:47                           ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+DATASET OVERVIEW:
+━━━━━━━━━━━━━━━━━
+• Total Records: 5,037
+• Total Utterances: 84,465
+• Unique Intents: 41
+• Unique Domains: 7
+• Date Range: 2025-01-01 10:09:00 to 2025-12-31 20:22:00
+
+DATA QUALITY SCORE: 33.3/100 (POOR ❌)
+
+KEY FINDINGS:
+━━━━━━━━━━━━━
+1. DATA TYPE: SYNTHETIC (AI-Generated)
+   Confidence: 95%
+
+2. CRITICAL ISSUES:
+   • Placeholder text: 6,353 utterances (7.5%)
+   • Low vocabulary diversity: TTR = 0.0169 (Natural: 0.4-0.6)
+   • High repetition: 686 agent responses repeated >10 times
+
+3. TEMPORAL ANOMALIES:
+   • All dates in 2025 (future dates)
+   • October spike detected: 1142 conversations
+
+4. STRUCTURAL ISSUES:
+   • 0 single-speaker conversations
+   • 490 duplicate reasons
+
+RECOMMENDATIONS:
+━━━━━━━━━━━━━━━━
+1. CRITICAL: Remove/regenerate placeholder text
+2. CRITICAL: Deduplicate reasons and conversations
+3. HIGH: Increase vocabulary diversity through augmentation
+4. MEDIUM: Fix temporal distribution
+5. MEDIUM: Validate conversation flow structure
+
+SUITABILITY:
+━━━━━━━━━━━━
+✅ Suitable for: Prototyping, testing, education
+❌ NOT suitable for: Production, research, customer-facing apps
