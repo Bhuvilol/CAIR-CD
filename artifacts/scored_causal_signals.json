@@ -1,0 +1,20 @@
+{
+  "long_conversation": {
+    "Escalation": {
+      "count": 587,
+      "lift": 1.0
+    }
+  },
+  "high_question_ratio": {
+    "Escalation": {
+      "count": 38,
+      "lift": 1.0
+    }
+  },
+  "customer_last_turn": {
+    "Escalation": {
+      "count": 28,
+      "lift": 1.0
+    }
+  }
+}
