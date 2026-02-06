@@ -6,11 +6,16 @@ ROOT_DIR = Path(__file__).resolve().parents[1]
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
+from context_memory.analysis_context import AnalysisContext
+from query_engine.followup_handler import handle_followup
 from ml_pipeline.predict_outcome import predict_outcome
 
 EVIDENCE_FILE = Path("artifacts/evidence_index.json")
 SIGNALS_FILE = Path("artifacts/scored_causal_signals.json")
 CONVERSATIONS_FILE = Path("data/processed/conversations_with_conv_features.json")
+
+# global deterministic context
+context = AnalysisContext()
 
 
 def parse_outcome_from_query(query: str):
@@ -38,7 +43,6 @@ def explain_outcome(query: str, max_evidence=5):
     with open(CONVERSATIONS_FILE, "r", encoding="utf-8") as f:
         conversations = json.load(f)
 
-    # pick relevant evidence
     relevant_evidence = [
         e for e in evidence_index if e["outcome_event"] == outcome
     ][:max_evidence]
@@ -52,7 +56,7 @@ def explain_outcome(query: str, max_evidence=5):
         f"before the outcome event occurs."
     )
 
-    # ---- ML PREDICTION (minimal, grounded) ----
+    # ML prediction (grounded in evidence)
     ml_prediction = None
     if relevant_evidence:
         conv_id = relevant_evidence[0]["conversation_id"]
@@ -61,7 +65,7 @@ def explain_outcome(query: str, max_evidence=5):
         )
         ml_prediction = predict_outcome(convo["turns"])
 
-    return {
+    result = {
         "outcome_event": outcome,
         "causal_factors": causal_factors,
         "evidence": relevant_evidence,
@@ -69,8 +73,25 @@ def explain_outcome(query: str, max_evidence=5):
         "ml_prediction": ml_prediction
     }
 
+    # update context AFTER result is complete
+    context.update(query, result)
+
+    return result
+
+
+def answer_query(query: str):
+    if context.has_context() and query.strip().endswith("?"):
+        return handle_followup(query, context)
+    return explain_outcome(query)
+
 
 if __name__ == "__main__":
-    query = "Why do escalation events occur in customer conversations?"
-    result = explain_outcome(query)
-    print(json.dumps(result, indent=2))
+    q1 = "Why do escalation events occur?"
+    r1 = answer_query(q1)
+    print("Q1:", q1)
+    print(json.dumps(r1, indent=2))
+
+    q2 = "Which factor matters most?"
+    r2 = answer_query(q2)
+    print("\nQ2:", q2)
+    print(json.dumps(r2, indent=2))
