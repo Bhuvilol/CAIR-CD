@@ -108,18 +108,19 @@ def explain_outcome(query: str, max_evidence: int = 5):
 def answer_query(query: str):
     q = query.lower()
 
-    # Counterfactual queries (Baby Step 9)
+    # Counterfactual queries
     if context.has_context() and (
         "prevent" in q or "avoided" in q or "counterfactual" in q
     ):
         return generate_counterfactuals(context)
 
-    # Follow-up analytical queries (Task 2)
-    if context.has_context() and query.strip().endswith("?"):
+    # Follow-up queries ONLY if an explanation already exists
+    if context.has_context() and context.last_result is not None:
         return handle_followup(query, context)
 
-    # Fresh analytical query (Task 1)
+    # Otherwise, treat as fresh analytical query
     return explain_outcome(query)
+
 
 
 # ------------------------------------------------------------------
