@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 
 # --------------------------------------------------
-# Helper (must be defined BEFORE use)
+# Helper
 # --------------------------------------------------
 def json_to_text(resp):
     if isinstance(resp, dict):
@@ -30,8 +30,7 @@ st.header("💬 Multi-Turn Analytical Query")
 st.markdown(
     """
     This interface demonstrates **context-aware reasoning**.
-    Follow-up questions build upon prior system responses
-    without recomputing from scratch.
+    Follow-up questions build on prior analysis.
     """
 )
 
@@ -42,19 +41,18 @@ if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
 # --------------------------------------------------
-# Display chat history
+# Display history
 # --------------------------------------------------
 for msg in st.session_state.chat_history:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
 # --------------------------------------------------
-# Input box
+# Input
 # --------------------------------------------------
 query = st.chat_input("Ask a question…")
 
 if query:
-    # User message
     st.session_state.chat_history.append(
         {"role": "user", "content": query}
     )
@@ -63,7 +61,11 @@ if query:
         with st.spinner("Reasoning…"):
             response = answer_query(query)
 
-        # Render response nicely
+        # 🔐 Persist last analysis across pages
+        if isinstance(response, dict) and "outcome_event" in response:
+            st.session_state["last_analysis"] = response
+            st.session_state["analysis_ready"] = True
+
         if isinstance(response, dict):
             if "answer" in response:
                 st.markdown(response["answer"])
@@ -78,7 +80,6 @@ if query:
         else:
             st.markdown(str(response))
 
-    # Store assistant response in history
     st.session_state.chat_history.append(
         {"role": "assistant", "content": json_to_text(response)}
     )

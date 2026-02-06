@@ -1,10 +1,9 @@
 import streamlit as st
-import json
 import sys
 from pathlib import Path
 
 # --------------------------------------------------
-# Path setup (so Streamlit can import your engine)
+# Path setup
 # --------------------------------------------------
 ROOT_DIR = Path(__file__).resolve().parents[2]
 if str(ROOT_DIR) not in sys.path:
@@ -19,18 +18,14 @@ st.header("🧠 Causal Analysis & Outcome Prediction")
 
 st.markdown(
     """
-    Enter an analytical question about conversational outcomes.
-    The system will return:
-    - Evidence-grounded causal explanation
-    - ML-based outcome prediction
+    Ask an analytical question about conversational outcomes.
+    The system returns **causal explanations**, **evidence**, and
+    **ML-based predictions**.
     """
 )
 
-# --------------------------------------------------
-# Query input
-# --------------------------------------------------
 query = st.text_input(
-    "Ask a question (example: Why do escalation events occur?)",
+    "Ask a question",
     value="Why do escalation events occur?"
 )
 
@@ -40,67 +35,36 @@ if run:
     with st.spinner("Analyzing conversations..."):
         result = answer_query(query)
 
+    # 🔐 Persist analysis for other pages
+    st.session_state["last_analysis"] = result
+    st.session_state["analysis_ready"] = True
+
     st.markdown("---")
 
-    # --------------------------------------------------
-    # Outcome
-    # --------------------------------------------------
     st.subheader("Outcome Event")
     st.write(result.get("outcome_event", "N/A"))
 
-    # --------------------------------------------------
-    # Causal Factors
-    # --------------------------------------------------
-    st.subheader("Identified Causal Factors")
-    factors = result.get("causal_factors", [])
-    if factors:
-        for f in factors:
-            st.markdown(f"- **{f}**")
-    else:
-        st.info("No causal factors identified.")
+    st.subheader("Causal Factors")
+    for f in result.get("causal_factors", []):
+        st.markdown(f"- **{f}**")
 
-    # --------------------------------------------------
-    # Explanation
-    # --------------------------------------------------
     st.subheader("Explanation")
-    st.write(result.get("explanation", "No explanation available."))
+    st.write(result.get("explanation", ""))
 
-    # --------------------------------------------------
-    # ML Prediction
-    # --------------------------------------------------
     ml = result.get("ml_prediction")
     if ml:
-        st.subheader("ML Outcome Prediction")
+        st.subheader("ML Prediction")
+        st.markdown(f"**Label:** {ml['predicted_label']}")
+        st.progress(min(ml["confidence"], 1.0))
+        st.caption(f"Confidence: {ml['confidence']:.3f}")
 
-        st.markdown(f"**Predicted Label:** {ml['predicted_label']}")
+    st.subheader("Evidence")
+    for e in result.get("evidence", []):
+        with st.expander(
+            f"{e['conversation_id']} | {e['signal']}"
+        ):
+            st.write(f"Domain: {e['domain']}")
+            st.write(f"Turn span: {e['turn_span']}")
 
-        confidence = ml.get("confidence", 0.0)
-        st.progress(min(confidence, 1.0))
-        st.caption(f"Confidence: {confidence:.3f}")
-
-        st.info(
-            "ML prediction is shown for comparison and does not replace "
-            "the causal explanation."
-        )
-
-    # --------------------------------------------------
-    # Evidence Summary
-    # --------------------------------------------------
-    st.subheader("Supporting Evidence")
-
-    evidence = result.get("evidence", [])
-    if evidence:
-        for e in evidence:
-            with st.expander(
-                f"Conversation {e['conversation_id']} | Signal: {e['signal']}"
-            ):
-                st.write(f"Domain: {e['domain']}")
-                st.write(f"Turn span: {e['turn_span']}")
-    else:
-        st.info("No evidence retrieved.")
-
-    # --------------------------------------------------
-    # Raw JSON (Transparency)
-    # --------------------------------------------------
-    with st.expander("Show raw system output (JSON)"):
+    with st.expander("Raw JSON output"):
         st.json(result)
