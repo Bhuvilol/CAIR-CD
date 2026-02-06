@@ -1,11 +1,17 @@
 {
   "long_conversation": {
-    "Escalation": 587
+    "Escalation": 607,
+    "FraudResolution": 49,
+    "Compensation": 19
   },
   "high_question_ratio": {
-    "Escalation": 38
+    "FraudResolution": 397,
+    "Compensation": 178,
+    "Escalation": 58
   },
   "customer_last_turn": {
+    "FraudResolution": 378,
+    "Compensation": 159,
     "Escalation": 28
   }
 }

@@ -10,10 +10,19 @@ OUTPUT_FILE = PROCESSED_DATA_PATH / "conversations.json"
 
 def map_outcome_event(intent: str):
     intent_lower = intent.lower()
+
     if "escalation" in intent_lower:
         return "Escalation"
-    if "refund" in intent_lower or "replacement" in intent_lower:
+
+    if "threat" in intent_lower or "legal" in intent_lower or "complaint" in intent_lower:
+        return "Escalation"
+
+    if "refund" in intent_lower or "replacement" in intent_lower or "return" in intent_lower:
         return "Compensation"
+
+    if "fraud" in intent_lower:
+        return "FraudResolution"
+
     return None
 
 

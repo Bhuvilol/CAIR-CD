@@ -1,20 +1,44 @@
 {
   "long_conversation": {
     "Escalation": {
-      "count": 587,
-      "lift": 1.0
+      "count": 607,
+      "lift": 1.431
+    },
+    "FraudResolution": {
+      "count": 49,
+      "lift": 0.283
+    },
+    "Compensation": {
+      "count": 19,
+      "lift": 0.245
     }
   },
   "high_question_ratio": {
+    "FraudResolution": {
+      "count": 397,
+      "lift": 2.444
+    },
+    "Compensation": {
+      "count": 178,
+      "lift": 2.444
+    },
     "Escalation": {
-      "count": 38,
-      "lift": 1.0
+      "count": 58,
+      "lift": 0.146
     }
   },
   "customer_last_turn": {
+    "FraudResolution": {
+      "count": 378,
+      "lift": 2.607
+    },
+    "Compensation": {
+      "count": 159,
+      "lift": 2.446
+    },
     "Escalation": {
       "count": 28,
-      "lift": 1.0
+      "lift": 0.079
     }
   }
 }
